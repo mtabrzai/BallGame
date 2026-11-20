@@ -8,11 +8,29 @@ android {
     compileSdk 34
 
     defaultConfig {
-        applicationId "com.neonbounce.tv"
         minSdk 24
         targetSdk 34
         versionCode 1
         versionName "1.0"
+    }
+
+    // One project builds BOTH APKs:
+    //   tv     -> Fire TV display app   (com.neonbounce.tv)
+    //   remote -> phone remote app      (com.neonbounce.remote)
+    flavorDimensions 'ui'
+    productFlavors {
+        tv {
+            dimension 'ui'
+            applicationId 'com.neonbounce.tv'
+            resValue 'string', 'app_name', 'Neon Bounce'
+            resValue 'string', 'default_url', 'http://192.168.1.10:8080/'
+        }
+        remote {
+            dimension 'ui'
+            applicationId 'com.neonbounce.remote'
+            resValue 'string', 'app_name', 'NB Remote'
+            resValue 'string', 'default_url', 'http://192.168.1.10:8080/remote'
+        }
     }
 
     buildTypes {

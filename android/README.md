@@ -1,39 +1,51 @@
-# Building the native APKs (optional)
+# Building the two APKs (Fire TV + phone)
 
-The game is web-based, so normally you don't need an APK: open the server URL in
-the Fire TV's Silk browser or in Amazon's **Web App Tester**, and "Add to Home
-Screen" on the phone for the remote. Use this wrapper only if you want a real,
-installable `.apk`.
+The game itself is web-based (server + two web pages). These wrappers turn the
+web pages into real installable `.apk` files: one for the Fire TV, one for the
+phone remote. One Gradle project builds **both** via product flavors:
 
-This sandbox cannot compile APKs (no Android SDK), so build it on your machine:
+| Flavor | applicationId | App name | Loads |
+|---|---|---|---|
+| `tv` | `com.neonbounce.tv` | Neon Bounce | `http://<server-ip>:8080/` (game screen) |
+| `remote` | `com.neonbounce.remote` | NB Remote | `http://<server-ip>:8080/remote` (controller) |
 
-## TV app APK (Android TV / Fire TV)
+The server URL is **not hardcoded**: on first launch (or if the page fails to
+load, or via the remote's MENU button) the app asks for the server address and
+remembers it. So build once, then just type the server IP on the device.
 
-1. Install **Android Studio** (with the Android SDK).
-2. Open the `android/` folder of this repo as a project.
-3. Edit `app/src/main/res/values/strings.xml` → set `game_url` to your server,
-   e.g. `http://192.168.1.10:8080/`.
-4. **Build → Generate Signed Bundle / APK → APK** (create a keystore the first
-   time). The APK lands in `app/build/outputs/apk/release/`.
-5. Install on the Fire TV:
-   - `adb install app/build/outputs/apk/release/app-release.apk` (enable ADB
-     debugging on the Fire TV: Settings → My Fire TV → Developer options), or
-   - copy the APK to a USB stick / cloud drive and install with a file manager
-     app on the TV (enable "install unknown apps" for it).
-6. The app appears on the Fire TV home screen (leanback banner included) and
-   loads the game fullscreen. The Fire TV remote D-pad sends arrow keys to the
-   page, which the game uses as a fallback controller.
+> Note: APKs must be compiled on a machine with the Android SDK. This sandbox
+> has no Java/Android SDK and cannot download one, so the binaries are not in
+> this repo — only this ready-to-build source.
 
-## Phone remote APK
+## Build (on any PC/Mac with Android Studio, free)
 
-Same template, different URL: copy the `android/` folder, change
-`applicationId` to e.g. `com.neonbounce.remote`, `app_name` to "NB Remote", and
-`game_url` to `http://192.168.1.10:8080/remote`. Build and install on the phone
-the same way. (Or just use the browser + "Add to Home Screen" — same result.)
+1. Install **Android Studio** (it bundles the JDK + Android SDK).
+2. **File → Open** → select the `android/` folder of this repo. Let Gradle sync.
+3. Edit `app/build.gradle` → flavor `tv`/`remote` → `default_url` if you want a
+   different default (optional — the app asks at runtime anyway).
+4. **Build → Generate Signed Bundle / APK → APK**, create/select a keystore.
+5. In the variant list tick **both** `tvRelease` and `remoteRelease` → Finish.
+6. APKs land in:
+   - `app/build/outputs/apk/tv/release/app-tv-release.apk` — **Fire TV app**
+   - `app/build/outputs/apk/remote/release/app-remote-release.apk` — **phone remote app**
 
-## Notes
+## Install
 
-- The manifest sets `usesCleartextTraffic="true"` so the app can reach the
-  `http://` server on your LAN.
-- `minSdk 24` covers Fire TV Stick (Fire OS 6+) and most phones.
-- The server must be running and reachable from the device (same Wi-Fi).
+**Fire TV:** enable *Settings → My Fire TV → Developer options → ADB debugging*
+and *Apps from Unknown Sources*, then either:
+- `adb install app/build/outputs/apk/tv/release/app-tv-release.apk`, or
+- copy the APK to USB/cloud and install with a file manager app on the TV.
+
+The app shows on the Fire TV home screen (leanback banner), landscape,
+fullscreen. The Fire TV remote D-pad sends arrow keys to the page (the game
+uses them as a fallback controller); MENU opens the server-URL dialog.
+
+**Phone:** `adb install .../app-remote-release.apk`, or transfer the file and
+tap it (allow "install unknown apps" for your file manager). Open **NB
+Remote**, enter the server address, then the 4-letter room code from the TV.
+
+## Requirements at runtime
+
+- The `node server.js` host must be running and on the same Wi-Fi as both
+  devices (cleartext HTTP is allowed in the manifest for this).
+- `minSdk 24` covers Fire TV Stick (Fire OS 6+) and virtually all phones.

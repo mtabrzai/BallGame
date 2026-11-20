@@ -1,17 +1,22 @@
 package com.neonbounce.tv
 
 import android.annotation.SuppressLint
+import android.app.AlertDialog
 import android.os.Bundle
 import android.view.KeyEvent
 import android.view.View
 import android.webkit.WebChromeClient
+import android.webkit.WebResourceError
+import android.webkit.WebResourceRequest
 import android.webkit.WebView
 import android.webkit.WebViewClient
+import android.widget.EditText
 import androidx.appcompat.app.AppCompatActivity
 
 class MainActivity : AppCompatActivity() {
 
     private lateinit var webView: WebView
+    private val prefs by lazy { getSharedPreferences("neonbounce", MODE_PRIVATE) }
 
     @SuppressLint("SetJavaScriptEnabled")
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -33,7 +38,15 @@ class MainActivity : AppCompatActivity() {
             allowFileAccess = false
             allowContentAccess = false
         }
-        webView.webViewClient = WebViewClient()
+        webView.webViewClient = object : WebViewClient() {
+            override fun onReceivedError(
+                view: WebView?,
+                request: WebResourceRequest?,
+                error: WebResourceError?
+            ) {
+                if (request?.isForMainFrame == true) promptForUrl()
+            }
+        }
         webView.webChromeClient = WebChromeClient()
         webView.setOnKeyListener { _, keyCode, event ->
             if (event.action == KeyEvent.ACTION_DOWN && keyCode == KeyEvent.KEYCODE_BACK) {
@@ -47,9 +60,46 @@ class MainActivity : AppCompatActivity() {
                 false
             }
         }
-        // URL of the running Neon Bounce server; can be overridden via intent extra "url"
-        val url = intent.getStringExtra("url") ?: getString(R.string.game_url)
-        webView.loadUrl(url)
+        loadSavedUrl()
+    }
+
+    private fun loadSavedUrl() {
+        val url = intent.getStringExtra("url") ?: prefs.getString("url", null)
+        if (url.isNullOrEmpty()) {
+            promptForUrl()
+        } else {
+            webView.loadUrl(url)
+        }
+    }
+
+    private fun promptForUrl() {
+        val input = EditText(this).apply {
+            setText(prefs.getString("url", getString(R.string.default_url)))
+            setSelection(text.length)
+        }
+        AlertDialog.Builder(this)
+            .setTitle("Server address")
+            .setMessage("Enter the Neon Bounce server URL (device and server on the same Wi-Fi):")
+            .setView(input)
+            .setPositiveButton("Connect") { _, _ ->
+                val raw = input.text.toString().trim().removeSuffix("/")
+                val url = if (raw.startsWith("http")) raw else "http://$raw"
+                prefs.edit().putString("url", url).apply()
+                webView.loadUrl(url)
+            }
+            .setNegativeButton("Cancel") { _, _ ->
+                if (prefs.getString("url", null).isNullOrEmpty()) finish()
+            }
+            .setCancelable(false)
+            .show()
+    }
+
+    override fun onKeyDown(keyCode: Int, event: KeyEvent?): Boolean {
+        if (keyCode == KeyEvent.KEYCODE_MENU) {
+            promptForUrl()
+            return true
+        }
+        return super.onKeyDown(keyCode, event)
     }
 
     override fun onPause() {

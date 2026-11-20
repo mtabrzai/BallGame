@@ -86,10 +86,11 @@ and phone URLs never change.
 - **No APK needed**: open `http://<server-ip>:8080/` in the Fire TV's Silk
   browser, or sideload the URL as a fullscreen "app" with Amazon's **Web App
   Tester** (search it in the Fire TV Appstore).
-- **Want a real installable `.apk`?** See [android/README.md](android/README.md):
-  a minimal Android TV WebView wrapper you build in Android Studio (this repo
-  ships the source, not the binary). For the phone remote, use the same wrapper
-  with the `/remote` URL, or just "Add to Home Screen" the remote page (PWA).
+- **Want real installable `.apk` files?** See [android/README.md](android/README.md):
+  one Android Studio project with `tv` + `remote` flavors builds **both APKs**
+  (Fire TV app + phone remote app) in a single signed build. The server URL is
+  entered on the device at first launch. The repo ships the source; the `.apk`
+  binaries are compiled on your machine (this sandbox has no Android SDK).
 
 ## Project layout
 
