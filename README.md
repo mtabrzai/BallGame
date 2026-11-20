@@ -83,13 +83,14 @@ and phone URLs never change.
 
 - The display page is overscan-friendly (playfield is letterboxed inside the
   screen edges) and scales to any TV resolution.
-- For a store-like experience, sideload the URL with Amazon's **Web App
-  Tester** (search it in the Fire TV Appstore). To ship as a native Fire TV
-  (Android TV) APK instead, wrap the same `public/` folder in a WebView via
-  Android Studio's `WebViewAssetLoader` — the game only needs WebSocket +
-  canvas support.
-- The remote is a PWA: on the phone, use *Add to Home Screen* for a
-  fullscreen app-like remote.
+- **No APK needed**: open `http://<server-ip>:8080/` in the Fire TV's Silk
+  browser, or sideload the URL as a fullscreen "app" with Amazon's **Web App
+  Tester** (search it in the Fire TV Appstore).
+- **Want real installable `.apk` files?** See [android/README.md](android/README.md):
+  one Android Studio project with `tv` + `remote` flavors builds **both APKs**
+  (Fire TV app + phone remote app) in a single signed build. The server URL is
+  entered on the device at first launch. The repo ships the source; the `.apk`
+  binaries are compiled on your machine (this sandbox has no Android SDK).
 
 ## Project layout
 
@@ -103,6 +104,7 @@ public/remote.js        remote logic: join, drag track, tilt, haptics
 public/style.css        shared styles
 public/manifest.webmanifest
 test/smoke.js           end-to-end test (spawns server, simulates TV + phone)
+android/                optional Android TV wrapper (build the .apk in Android Studio)
 ```
 
 ## Verify

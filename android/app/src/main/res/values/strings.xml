@@ -1,0 +1,5 @@
+<resources>
+    <!-- app_name and default_url are provided per product flavor (tv / remote)
+         in app/build.gradle. The server URL can also be entered at runtime and
+         is stored in SharedPreferences. -->
+</resources>
