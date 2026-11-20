@@ -1,0 +1,10 @@
+{
+  "name": "Neon Bounce Remote",
+  "short_name": "NB Remote",
+  "description": "Mobile remote for the Neon Bounce Fire TV game",
+  "start_url": "/remote",
+  "display": "standalone",
+  "background_color": "#05010f",
+  "theme_color": "#05010f",
+  "orientation": "portrait"
+}

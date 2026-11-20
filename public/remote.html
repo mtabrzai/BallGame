@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+  <meta name="theme-color" content="#05010f">
+  <title>Neon Bounce — Remote</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" href="data:,">
+</head>
+<body class="remote">
+
+  <div id="connect-screen" class="screen">
+    <h1 class="logo">NEON BOUNCE</h1>
+    <p class="subtitle">Enter the 4-letter room code shown on your Fire TV</p>
+    <input id="code-input" maxlength="4" inputmode="text" autocomplete="off"
+           autocapitalize="characters" autocorrect="off" spellcheck="false" placeholder="····">
+    <button id="join-btn" class="btn">CONNECT</button>
+    <div id="conn-error"></div>
+  </div>
+
+  <div id="play-screen" class="screen" hidden>
+    <div id="hud">
+      <span class="room" id="r-room">····</span>
+      <span class="score" id="r-score">0</span>
+      <span class="lives" id="r-lives">♥♥♥</span>
+    </div>
+    <div id="combo-line"></div>
+    <div id="track"><div id="paddle-ind"></div></div>
+    <div id="remote-status">Waiting for the game…</div>
+    <div class="controls">
+      <button id="start-btn" class="btn">START</button>
+      <button id="tilt-btn" class="btn secondary">Enable tilt control</button>
+      <p class="hint">Drag on the track to move the plate — keep it under the ball.<br>
+      You can also enable tilt control. Ball off the bottom = out.</p>
+    </div>
+  </div>
+
+  <script src="remote.js"></script>
+</body>
+</html>
